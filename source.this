@@ -1,0 +1,1 @@
+alias curl="curl --cacert ssl_certificates/server.pem"

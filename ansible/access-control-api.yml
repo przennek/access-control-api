@@ -1,0 +1,54 @@
+---
+- name: Deploying to production
+  hosts: all
+  become: true
+
+  tasks:
+    - name: RMF FM everything
+      command: rm -rf /home/pc/app
+
+    - name: Create app dir
+      file:
+        path: /home/pc/app
+        state: directory
+        mode: "0755"
+
+    - name: Copy docker-compose-template.yml to the server
+      copy:
+        src: ../config/docker-compose.yml
+        dest: /home/pc/app/docker-compose.yml
+
+    - name: Copy default.conf to the server
+      copy:
+        src: ../config/default.conf
+        dest: /home/pc/app/default.conf
+
+    - name: Deploy ssl certificates to the server
+      copy:
+        src: ../ssl_certificates
+        dest: /home/pc/app
+
+    - name: Deploy access-control-api.service
+      template:
+        src: ../config/access-control-api.service
+        dest: /etc/systemd/system/access-control-api.service
+        owner: root
+        group: root
+        mode: '0644'
+      vars:
+        project_directory: /home/pc
+
+    - name: Chown the home directory just to be sure
+      become: true
+      ansible.builtin.command:
+        cmd: chown -R pc:pc /home/pc
+
+    - name: Stop Docker Compose (in case of redeploy)
+      command: docker-compose down
+      args:
+        chdir: /home/pc/app
+
+    - name: Start Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: /home/pc/app

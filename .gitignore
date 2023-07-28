@@ -1,2 +1,4 @@
 .idea/
 *iml*
+ssl_certificates/*
+venv

@@ -1,0 +1,28 @@
+# this is a prod docker-compose
+
+version: '3.8'
+
+services:
+  app:
+    image: przennek/access-control-api-armv7:$VERSION_TAG
+    restart: always
+    expose:
+      - 5000
+    environment:
+      - FLASK_APP=/src/aca/api/access_control_api.py
+      - FLASK_ENV=production
+    privileged: true   # check your privilege
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
+
+  nginx:
+    image: nginx:1.25.1
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl_certificates:/etc/nginx/ssl  # Mount SSL certificate files
+    depends_on:
+      - app
