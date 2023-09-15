@@ -1,6 +1,7 @@
 from injector import inject, singleton
 
 from aca.api.model.input.lock_control_input import LockControlModel
+from aca.api.model.video_stream_model import VideoStreamModel
 from aca.gpio.buzzer_driver import BuzzerDriver
 from aca.gpio.lock_driver import LockDriver
 
@@ -15,3 +16,5 @@ def context(binder):
     binder.bind(LockDriver, to=lock_driver, scope=singleton)
 
     binder.bind(LockControlModel, to=LockControlModel(lock_driver), scope=singleton)
+
+    binder.bind(VideoStreamModel, to=VideoStreamModel(), scope=singleton)

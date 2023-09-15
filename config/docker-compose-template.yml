@@ -14,6 +14,8 @@ services:
     privileged: true   # check your privilege
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
+    volumes:
+      - /usr/bin/ffmpeg:/usr/bin/ffmpeg
 
   nginx:
     image: nginx:1.25.1

@@ -13,7 +13,7 @@
         state: directory
         mode: "0755"
 
-    - name: Copy docker-compose-template.yml to the server
+    - name: Copy docker-compose.yml to the server
       copy:
         src: ../config/docker-compose.yml
         dest: /home/pc/app/docker-compose.yml
@@ -47,6 +47,9 @@
       command: docker-compose down
       args:
         chdir: /home/pc/app
+
+#    - name: Delete all locally cached Docker images
+#      shell: docker system prune -a --force
 
     - name: Start Docker Compose
       command: docker-compose up -d

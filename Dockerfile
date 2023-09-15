@@ -1,28 +1,14 @@
-# Build uWSGI and the application
-FROM navikey/raspbian-buster as builder
+# Use the official Raspbian Buster image as the base image
+FROM przennek/rasbian-buster:latest as builder
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Install build dependencies for uWSGI
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y python3 python3-pip build-essential wiringpi
-
-# Copy the requirements.txt file into the container
-COPY config/requirements.txt .
-
-# Install the Python dependencies
-RUN python3 -m "pip" install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application files into the container
-COPY ./src/aca ./aca
-
-# Build and install uWSGI
-RUN python3 -m "pip" install uwsgi
-
-# Set the working directory for the final image
-WORKDIR /app
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get -y install uwsgi python3 python3-pip libgl1-mesa-glx -y
+RUN python3 -m pip install opencv-contrib-python
+RUN python3 -m pip install picamera
+RUN python3 -m pip install "picamera[array]"
 
 # Expose the port that uWSGI will listen on
 EXPOSE 5000
@@ -31,5 +17,15 @@ EXPOSE 5000
 ENV FLASK_APP=/app/aca/access_control_api.py
 ENV FLASK_ENV=production
 
+# Copy the rest of the application files into the container
+COPY ./src/aca ./aca
+COPY ./templates ./aca/templates
+COPY ./config/requirements.txt ./requirements.txt
+COPY ./config/uwsgi.ini ./aca/uwsgi.ini
+
+RUN pip install -r requirements.txt
+RUN apt-get -y install python3-rpi.gpio rpi.gpio-common python3-pyaudio
+
 # Start uWSGI to run the Flask app
-CMD ["uwsgi", "--http", "0.0.0.0:5000", "--wsgi-file", "/app/aca/access_control_api.py", "--callable", "app", "--processes", "2", "--threads", "1"]
+WORKDIR /app
+CMD ["uwsgi", "--ini", "./aca/uwsgi.ini"]

@@ -15,3 +15,6 @@ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
 # PEM for curl see: source.this
 openssl x509 -in server.crt -out server.pem -outform PEM
+
+# .p12 for macos keychain
+openssl pkcs12 -export -out server.p12 -inkey server.key -in server.crt -passout pass:

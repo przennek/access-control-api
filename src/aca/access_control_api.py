@@ -1,3 +1,8 @@
+# Enable Gevent monkey patching
+from gevent import monkey
+
+monkey.patch_all()
+
 import logging.handlers
 import os
 
@@ -22,4 +27,4 @@ app.before_first_request_funcs = []
 app.config["iocc"] = FlaskInjector(app=app, modules=[context])
 
 if __name__ == '__main__':
-    app.run()
+    app.run(threaded=True)
