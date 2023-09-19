@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>Bramka</title>
+  </head>
+  <body>
+    <img src="https://bramka/api/stream/video_feed">
+    <input type="button" value="Answer" onclick="play()">
+    <audio id="audio" src="https://bramka/api/stream/audio_feed" type="audio/x-wav;codec=pcm"></audio>
+    <script>
+      function play() {
+        var audio = document.getElementById("audio");
+        audio.play();
+      }
+    </script>
+  </body>
+</html>

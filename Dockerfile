@@ -20,6 +20,7 @@ ENV FLASK_ENV=production
 # Copy the rest of the application files into the container
 COPY ./src/aca ./aca
 COPY ./templates ./aca/templates
+COPY ./static ./aca/static
 COPY ./config/requirements.txt ./requirements.txt
 COPY ./config/uwsgi.ini ./aca/uwsgi.ini
 

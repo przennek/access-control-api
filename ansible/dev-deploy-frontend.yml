@@ -1,0 +1,22 @@
+---
+- name: Deploying front
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Copy updated static assets to the host
+      ansible.builtin.copy:
+        src: /Users/pc/Projects/access-control-api/vue/aca-front/dist
+        dest: /home/pc/dist
+
+    - name: Get the ID of the running Docker container
+      ansible.builtin.command: docker ps -qf "name=app-app-1"
+      register: container_id
+
+    - name: Copy updated static assets to the host
+      ansible.builtin.copy:
+        src: /Users/pc/Projects/access-control-api/static
+        dest: /home/pc/dist
+
+    - name: Copy files into container
+      shell: docker cp /home/pc/dist/static/ "{{ container_id.stdout }}":/app/aca/
