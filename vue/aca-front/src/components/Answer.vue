@@ -1,21 +1,19 @@
 <template>
-  <audio id="audio" src="https://bramka/api/stream/audio_feed" type="audio/x-wav;codec=pcm" class="hidden" preload="none"></audio>
+  <audio id="audio" ref="audio" src="" type="audio/x-wav;codec=pcm" class="hidden" preload="none"></audio>
 </template>
 
-<script>
-  import { ref, onMounted, onUnmounted } from 'vue';
+<script setup>
+  import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-  const audio = document.getElementById("audio");
-
-  function play() {
-    audio.play();
-  }
+  const audio = ref(null);
 
   onMounted(() => {
-    audio.play();
+    audio._value.setAttribute("src", "https://bramka/api/stream/audio_feed")
+    audio._value.play();
   });
 
-  onUnmounted(() => {
-    audio.pause(); // To pause the audio when the component is unmounted
+  onBeforeUnmount(() => {
+    audio._value.setAttribute("src", "")
+    audio._value.pause();
   });
 </script>

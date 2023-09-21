@@ -1,4 +1,6 @@
+import redis
 from injector import inject, singleton
+from redis import Redis
 
 from aca.api.model.input.lock_control_input import LockControlModel
 from aca.api.model.video_stream_model import VideoStreamModel
@@ -18,3 +20,5 @@ def context(binder):
     binder.bind(LockControlModel, to=LockControlModel(lock_driver), scope=singleton)
 
     binder.bind(VideoStreamModel, to=VideoStreamModel(), scope=singleton)
+
+    binder.bind(Redis, redis.StrictRedis(host='app-redis-1', port=6379, db=0), scope=singleton)

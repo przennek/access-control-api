@@ -48,8 +48,8 @@
       args:
         chdir: /home/pc/app
 
-    - name: Delete all locally cached Docker images
-      shell: docker system prune -a --force
+#    - name: Delete all locally cached Docker images
+#      shell: docker system prune -a --force
 
     - name: Start Docker Compose
       command: docker-compose up -d

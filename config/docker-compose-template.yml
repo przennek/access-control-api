@@ -28,3 +28,11 @@ services:
       - ./ssl_certificates:/etc/nginx/ssl  # Mount SSL certificate files
     depends_on:
       - app
+
+  redis:
+    image: przennek/aca-redis:0.0.1
+    volumes:
+      - /home/pc/storage:/data # Mount /home/pc/storage as the data directory
+    ports:
+      - "6379:6379"
+    restart: always

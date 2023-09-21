@@ -13,3 +13,4 @@ RPi.GPIO==0.7.0
 uWSGI==2.0.22
 Flask-Cors==4.0.0
 gevent
+redis

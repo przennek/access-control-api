@@ -9,7 +9,7 @@
       <img src="https://bramka/api/stream/video_feed"> <!-- VIDEO_FEED -->
       <nav>
         <RouterLink to="/">End Call</RouterLink>
-        <RouterLink to="/Answer">Answer</RouterLink>
+        <RouterLink to="/answer">Answer</RouterLink>
       </nav>
     </div>
   </header>
