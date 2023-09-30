@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "room": {
+      "type": ["integer"],
+      "minimum": 1,
+      "maximum": 255
+    },
+    "code": {
+      "type": "string"
+    }
+  },
+  "required": ["code", "room"]
+}

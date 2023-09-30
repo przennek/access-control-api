@@ -27,6 +27,14 @@ COPY ./config/uwsgi.ini ./aca/uwsgi.ini
 RUN pip install -r requirements.txt
 RUN apt-get -y install python3-rpi.gpio rpi.gpio-common python3-pyaudio
 
-# Start uWSGI to run the Flask app
+# Install supervisord
+RUN apt-get update && apt-get install -y supervisor && rm -rf /var/lib/apt/lists/*
+
+RUN echo '* * * * * root PYTHONPATH="/app" /usr/bin/python3 /app/aca/jobs/open_close_politcs.py >> /var/log/cron.log 2>&1' > /etc/cron.d/cronjob \
+    && chmod 0644 /etc/cron.d/cronjob
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Start uWSGI and cron
 WORKDIR /app
-CMD ["uwsgi", "--ini", "./aca/uwsgi.ini"]
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -12,5 +12,5 @@ Flask-Injector==0.14.0
 RPi.GPIO==0.7.0
 uWSGI==2.0.22
 Flask-Cors==4.0.0
-gevent
-redis
+gevent==23.9.1
+redis==5.0.1

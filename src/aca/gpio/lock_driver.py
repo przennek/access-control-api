@@ -26,20 +26,23 @@ class LockDriver:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
 
-    def open_lock(self):
+    def open_lock(self, buzz=True):
         if gpio_mocked:
             logger.warning("GPIO is mocked")
 
-        self.bd.beep()
+        if buzz:
+            self.bd.beep()
         # open lock
         GPIO.setup(17, GPIO.OUT)
         GPIO.output(17, True)
 
-    def close_lock(self):
+    def close_lock(self, buzz=True):
         if gpio_mocked:
             logger.warning("GPIO is mocked")
 
-        self.bd.beep()
+        if buzz:
+            self.bd.beep()
+
         # door closed
         GPIO.setup(17, GPIO.OUT)
         GPIO.output(17, False)

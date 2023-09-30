@@ -19,8 +19,6 @@ def find_ongoing_call() -> Optional[Call]:
 
     for key in keys:
         value = redis.get(key)
-        logger.info(value)
-        logger.info(key)
         if value == b'True':
             room_match = re.match(r'call_room;(\d+);', key.decode())
             if room_match:
@@ -38,7 +36,13 @@ def find_ongoing_call() -> Optional[Call]:
 # Note to self. This is not thread safe, however since I have only one numeric pad which can
 # be used only to perform a single call it shouldn't be a problem.
 def put_ongoing_call(call: Call) -> bool:
-    if find_ongoing_call() is None:
-        db_atomic_update(call.get_key(), str(call.get_value()))
+    call_expire_seconds: int = 900
+    if not call.ongoing or (call.ongoing and find_ongoing_call() is None):
+        db_atomic_update(
+            key=call.get_key(),
+            value=str(call.get_value()),
+            ttl_seconds=call_expire_seconds
+        )
         return True
+
     return False

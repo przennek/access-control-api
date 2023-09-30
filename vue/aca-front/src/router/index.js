@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import StandbyView from '../views/StandbyView.vue'
+import ActivateView from '../views/ActivateView.vue'
+import CallMenuView from '../views/CallMenuView.vue'
+import LockView from '../views/LockView.vue'
+import StatusView from '../views/StatusView.vue'
 
 const router = createRouter({
   history: createWebHistory('/static/aca-front/'),
@@ -7,16 +11,35 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      components: {
+        left: ActivateView,
+        right: LockView
+      }
+    },
+    {
+      path: '/standby',
+      name: 'standby',
+      components: {
+        left: StatusView,
+        right: StandbyView
+      }
+    },
+    {
+      path: '/calling',
+      name: 'calling',
+      components: {
+        left: CallMenuView,
+        right: () => import('../views/CallingView.vue')
+      }
     },
     {
       path: '/answer',
       name: 'answer',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AnswerView.vue')
-    }
+      components: {
+        left: CallMenuView,
+        right: () => import('../views/AnswerView.vue')
+      }
+    },
   ]
 })
 

@@ -1,0 +1,213 @@
+openapi: '3.1.0'
+info:
+  title: Access Control API
+  description: API for my home gate
+  version: 1.0
+basePath: /api
+schemes:
+  - https
+servers:
+  - url: https://bramka:443
+
+paths:
+  # CALL CONTROL
+  /api/call:
+    post:
+      summary: Activate or deactivate calls for a particular room
+      tags:
+        - Call
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallRequest'
+      responses:
+        '201':
+          description: Active/Inactive call created
+        default:
+          description: Error
+
+    /api/call/ongoing:
+      get:
+        summary: Poll ongoing calls
+        tags:
+          - Call
+        responses:
+          '200':
+            description: Ongoing call information retrieved successfully
+          '202':
+            description: No ongoing calls found
+
+  # ENROLLMENT
+  /api/enrollment/create:
+    post:
+      summary: Create an enrollment record
+      tags:
+        - Enrollment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnrollmentRequest'
+      responses:
+        '201':
+          description: Enrollment created successfully
+        default:
+          description: Error
+
+  /api/enrollment/get:
+    get:
+      summary: Get an enrollment record by code
+      tags:
+        - Enrollment
+      parameters:
+        - name: code
+          in: query
+          type: string
+          required: true
+          description: The code of the enrollment to retrieve
+      responses:
+        '200':
+          description: Enrollment information retrieved successfully
+        '404':
+          description: Enrollment not found
+
+  # LOCK CONTROL
+  /api/lock/control:
+    post:
+      summary: Handle lock control requests
+      tags:
+        - Lock Control
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LockControlInput'
+      responses:
+        '200':
+          description: Lock control request successful
+        default:
+          description: Error
+
+  # LOCK POLICY
+  /api/lock/policy:
+    post:
+      summary: Create or update open door policies
+      tags:
+        - Open Door Policies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenLockPolicyInput'
+      responses:
+        '200':
+          description: Open door policy created or updated successfully
+        '400':
+          description: Bad Request, invalid input data
+    delete:
+      summary: Delete an open door policy by its ID
+      tags:
+        - Open Door Policies
+      parameters:
+        - name: id
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Open door policy deleted successfully
+        '400':
+          description: Bad Request, a valid id UUID string is required
+    put:
+      summary: Switch the state of an open door policy by its ID
+      tags:
+        - Open Door Policies
+      parameters:
+        - name: id
+          in: query
+          type: string
+          required: true
+        - name: state
+          in: query
+          type: boolean
+          required: true
+      responses:
+        '200':
+          description: Open door policy state switched successfully
+        '400':
+          description: Bad Request, invalid input data
+    get:
+      summary: Get all open door policies
+      tags:
+        - Open Door Policies
+      responses:
+        '200':
+          description: List of open door policies retrieved successfully
+
+  /api/lock/policy/active:
+    get:
+      summary: Get currently active open door policies
+      tags:
+        - Open Door Policies
+      responses:
+        '200':
+          description: List of active open door policies retrieved successfully
+
+  /api/status/server:
+    get:
+      summary: Get Server Status
+      description: Retrieve the server status.
+      tags:
+        - Status
+      responses:
+        200:
+          description: Successful response
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - ONLINE
+                  - OFFLINE
+
+  /api/stream/video_feed:
+    get:
+      summary: Get video feed
+      tags:
+        - Media
+      responses:
+        '200':
+          description: Video feed retrieved successfully
+        default:
+          description: Error
+
+  /api/stream/audio_feed:
+    get:
+      summary: Get audio feed
+      tags:
+        - Media
+      responses:
+        '200':
+          description: Audio feed retrieved successfully
+        default:
+          description: Error
+
+components:
+  schemas:
+    CallRequest:
+      $ref: './schemas/call_room_schema.json'
+
+    EnrollmentRequest:
+      $ref: './schemas/enrollment_schema.json'
+
+    LockControlInput:
+      $ref: './schemas/lock_input_schema.json'
+
+    OpenLockPolicyInput:
+      $ref: './schemas/open_lock_policy_schema.json'

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "vuetify": "^3.3.17",
+    "yarn": "^1.22.19"
+  }
+}

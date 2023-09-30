@@ -28,6 +28,16 @@
         src: ../ssl_certificates
         dest: /home/pc/app
 
+    - name: Deploy swagger.yml
+      copy:
+        src: ../swagger/swagger.yml
+        dest: /home/pc/app
+
+    - name: Deploy schemas for swagger
+      copy:
+        src: ../src/aca/api/model/input/schemas
+        dest: /home/pc/app/
+
     - name: Deploy access-control-api.service
       template:
         src: ../config/access-control-api.service

@@ -3,17 +3,8 @@
 </script>
 
 <template>
-  <header>
-<!--    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />-->
-    <div class="wrapper">
-      <img src="https://bramka/api/stream/video_feed"> <!-- VIDEO_FEED -->
-      <nav>
-        <RouterLink to="/">End Call</RouterLink>
-        <RouterLink to="/answer">Answer</RouterLink>
-      </nav>
-    </div>
-  </header>
-  <RouterView />
+  <RouterView name="left" />
+  <RouterView name="right" />
 </template>
 
 <style scoped>

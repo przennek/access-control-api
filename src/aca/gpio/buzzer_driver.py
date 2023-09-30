@@ -22,7 +22,7 @@ class BuzzerDriver:
         GPIO.setmode(GPIO.BCM)
         # buzzer off
         GPIO.setup(27, GPIO.OUT)
-        GPIO.output(27, True)
+        GPIO.output(27, False)
 
     def beep(self):
         def _beep():

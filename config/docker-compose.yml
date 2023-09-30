@@ -4,7 +4,7 @@ version: '3.8'
 
 services:
   app:
-    image: przennek/access-control-api-armv7:0.0.7
+    image: przennek/access-control-api-armv7:0.0.10
     restart: always
     expose:
       - 5000
@@ -14,8 +14,6 @@ services:
     privileged: true   # check your privilege
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
-    volumes:
-      - /usr/bin/ffmpeg:/usr/bin/ffmpeg
 
   nginx:
     image: nginx:1.25.1
@@ -36,3 +34,15 @@ services:
     ports:
       - "6379:6379"
     restart: always
+
+  swagger_ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./swagger.yml:/swagger.yaml
+      - ./schemas:/schemas
+    environment:
+      - SWAGGER_JSON=/swagger.yaml
+    depends_on:
+      - app

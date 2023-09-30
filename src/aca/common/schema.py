@@ -30,6 +30,9 @@ def validate_json_schema(schema):
 
 # json schemas
 lock_input_json_schema = load_json_schema("./aca/api/model/input/schemas/lock_input_schema.json")
+open_lock_policy_json_schema \
+    = load_json_schema("./aca/api/model/input/schemas/open_lock_policy_schema.json")
 call_room_json_schema = load_json_schema("./aca/api/model/input/schemas/call_room_schema.json")
+enrollment_json_schema = load_json_schema("./aca/api/model/input/schemas/enrollment_schema.json")
 
 # end json schemas

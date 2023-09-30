@@ -8,6 +8,7 @@ rm -rf ./static/*
 cd ./vue/aca-front/ || exit
 npm run build
 mv dist/* ../../static
+cp -r ./src/sounds/*.mp3 ../../static/assets
 cd ../../
 
 docker buildx build --platform linux/arm/v7 -t przennek/access-control-api-armv7:$1 --push .
