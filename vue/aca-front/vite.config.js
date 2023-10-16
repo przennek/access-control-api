@@ -17,6 +17,7 @@ export default defineConfig({
     }
   },
    build: {
+    target: 'es5',
     rollupOptions: {
       external: [],
     },

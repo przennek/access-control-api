@@ -2,19 +2,29 @@
   <div class="container">
     <img ref="video" class="video" src="../assets/standby.png">
     <audio id="audio" ref="audio" src="" type="audio/x-wav;codec=pcm" class="hidden" preload="none"></audio>
+    <button @click="toggleAudioStream">{{ streaming ? 'Stop Streaming' : 'Start Streaming' }}</button>
   </div>
 </template>
 
 <script setup>
     import { ref, onMounted, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
-    import { redirectToStandbyOnEndedCall } from '../api/api.js'
+    import { redirectToStandbyOnEndedCall } from '../api/api.js';
+    import { captureMicrophoneData } from '../api/streaming.js';
 
     const audio = ref(null);
+    const streamingAudio = ref(null);
     const video = ref(null);
+    const streaming = ref(false);
+
     const router = useRouter();
+
     let pollTimer;
     const pollInterval = 500;
+
+    const toggleAudioStream = () => {
+      captureMicrophoneData();
+    };
 
     onMounted(() => {
       pollTimer = setInterval(async () => redirectToStandbyOnEndedCall(router, video), pollInterval);
@@ -29,6 +39,8 @@
       audio.value.setAttribute("src", "")
       audio.value.pause();
     });
+
+
 </script>
 
 <style scoped>

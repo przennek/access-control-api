@@ -5,7 +5,16 @@ FROM przennek/rasbian-buster:latest as builder
 WORKDIR /app
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get -y install uwsgi python3 python3-pip libgl1-mesa-glx -y
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_PRIORITY=critical
+
+RUN apt-get -y install libasound2 alsa-utils pulseaudio
+RUN apt-get -y install python3 python3-pip libgl1-mesa-glx -y
+RUN apt-get install libssl-dev
+
+RUN CFLAGS="-I/usr/local/opt/openssl/include" LDFLAGS="-L/usr/local/opt/openssl/lib" \
+    UWSGI_PROFILE_OVERRIDE=ssl=true pip install uwsgi -Iv
+
 RUN python3 -m pip install opencv-contrib-python
 RUN python3 -m pip install picamera
 RUN python3 -m pip install "picamera[array]"
