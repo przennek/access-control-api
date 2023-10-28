@@ -6,7 +6,6 @@ from aca.api.db.dto.enrollment_dto import EnrollmentDTO
 from aca.api.db.dto.open_door_policy_dto import OpenDoorPolicyDTO
 from aca.api.model.lock_control_model import LockControlModel
 from aca.api.model.open_door_policy_model import OpenDoorPolicyModel
-from aca.api.model.video_stream_model import VideoStreamModel
 from aca.gpio.buzzer_driver import BuzzerDriver
 from aca.gpio.lock_driver import LockDriver
 
@@ -24,8 +23,6 @@ def context(binder):
     door_policy_dto = OpenDoorPolicyDTO(strict_redis)
     binder.bind(LockControlModel, to=LockControlModel(lock_driver, door_policy_dto),
                 scope=singleton)
-
-    binder.bind(VideoStreamModel, to=VideoStreamModel(), scope=singleton)
 
     binder.bind(Redis, strict_redis, scope=singleton)
 

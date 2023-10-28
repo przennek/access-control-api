@@ -39,7 +39,7 @@ const router = createRouter({
         left: CallMenuView,
         right: () => import('../views/AnswerView.vue')
       }
-    },
+    }
   ]
 })
 

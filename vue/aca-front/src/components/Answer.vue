@@ -1,8 +1,7 @@
 <template>
   <div class="container">
     <img ref="video" class="video" src="../assets/standby.png">
-    <audio id="audio" ref="audio" src="" type="audio/x-wav;codec=pcm" class="hidden" preload="none"></audio>
-    <button @click="toggleAudioStream">{{ streaming ? 'Stop Streaming' : 'Start Streaming' }}</button>
+    <audio id="remote-audio" autoplay=""></audio>
   </div>
 </template>
 
@@ -10,34 +9,25 @@
     import { ref, onMounted, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
     import { redirectToStandbyOnEndedCall } from '../api/api.js';
-    import { captureMicrophoneData } from '../api/streaming.js';
+    import { start, stop } from '../api/webrtc.js';
 
-    const audio = ref(null);
-    const streamingAudio = ref(null);
     const video = ref(null);
-    const streaming = ref(false);
 
     const router = useRouter();
 
     let pollTimer;
     const pollInterval = 500;
 
-    const toggleAudioStream = () => {
-      captureMicrophoneData();
-    };
-
     onMounted(() => {
       pollTimer = setInterval(async () => redirectToStandbyOnEndedCall(router, video), pollInterval);
-      video.value.setAttribute("src", "https://bramka/api/stream/video_feed")
-      audio.value.setAttribute("src", "https://bramka/api/stream/audio_feed")
-      audio.value.play();
+      start();
+      video.value.setAttribute("src", "https://bramka:8080/stream/video.mjpeg")
     });
 
     onBeforeUnmount(() => {
       clearInterval(pollTimer);
       video.value.setAttribute("src", "../assets/standby.png")
-      audio.value.setAttribute("src", "")
-      audio.value.pause();
+      stop();
     });
 
 

@@ -8,6 +8,7 @@
     import { ref, onMounted, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
     import { redirectToStandbyOnEndedCall } from '../api/api.js';
+    import { start, stop } from '../api/webrtc.js';
 
     const inputValue = ref('');
     const router = useRouter();
@@ -43,7 +44,7 @@
     onMounted(() => {
         audio = new Audio(soundURL);
         ring();
-        video.value.setAttribute("src", "https://bramka/api/stream/video_feed")
+        video.value.setAttribute("src", "https://bramka:8080/stream/video.mjpeg")
         pollTimer = setInterval(() => redirectToStandbyOnEndedCall(router, video), pollInterval);
     });
 

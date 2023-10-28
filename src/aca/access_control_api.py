@@ -5,7 +5,6 @@ from aca.api.controllers.call_control_controllers import call_api_bp
 from aca.api.controllers.enrollment_controllers import enrollment_api_bp
 from aca.api.controllers.internal_controllers import api_bp
 from aca.api.controllers.lock_control_controllers import lock_api_bp
-from aca.api.controllers.media_api_controllers import media_api_bp
 from aca.api.controllers.status_controllers import status_api_bp
 
 monkey.patch_all()
@@ -26,7 +25,6 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 # blueprints
 app.register_blueprint(api_bp)
-app.register_blueprint(media_api_bp)
 app.register_blueprint(call_api_bp)
 app.register_blueprint(lock_api_bp)
 app.register_blueprint(enrollment_api_bp)
