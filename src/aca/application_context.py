@@ -4,8 +4,10 @@ from redis import Redis
 
 from aca.api.db.dto.enrollment_dto import EnrollmentDTO
 from aca.api.db.dto.open_door_policy_dto import OpenDoorPolicyDTO
+from aca.api.db.dto.pin_dto import PinDTO
 from aca.api.model.lock_control_model import LockControlModel
 from aca.api.model.open_door_policy_model import OpenDoorPolicyModel
+from aca.api.model.pin_model import PinModel
 from aca.gpio.buzzer_driver import BuzzerDriver
 from aca.gpio.lock_driver import LockDriver
 
@@ -21,8 +23,13 @@ def context(binder):
 
     strict_redis = redis.StrictRedis(host='app-redis-1', port=6379, db=0)
     door_policy_dto = OpenDoorPolicyDTO(strict_redis)
-    binder.bind(LockControlModel, to=LockControlModel(lock_driver, door_policy_dto),
+    pin_dto = PinDTO(strict_redis)
+
+    binder.bind(LockControlModel,
+                to=LockControlModel(lock_driver, door_policy_dto, pin_dto),
                 scope=singleton)
+
+    binder.bind(PinModel, to=PinModel(pin_dto), scope=singleton)
 
     binder.bind(Redis, strict_redis, scope=singleton)
 

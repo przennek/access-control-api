@@ -17,7 +17,7 @@ class OpenDoorPolicyDTO:
     def create(open_door_policy: OpenDoorPolicy, ttl_seconds: Optional[int] = None) -> None:
         db_atomic_update(open_door_policy.get_key(), open_door_policy.get_value(), ttl_seconds)
 
-    def find(self) -> List[OpenDoorPolicy]:
+    def find(self) -> List[OpenDoorPolicy]:  # TODO (low) HMSET?
         key_pattern = "open_door_policy;*;*;*;*;"
         out = []
         for key in self.redis.keys(key_pattern):

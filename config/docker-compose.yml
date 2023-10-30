@@ -4,7 +4,7 @@ version: '3.8'
 
 services:
   app:
-    image: przennek/access-control-api-armv7:0.0.2
+    image: przennek/access-control-api-armv7:0.0.6
     restart: always
     expose:
       - 5000

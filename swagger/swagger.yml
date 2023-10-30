@@ -74,6 +74,65 @@ paths:
         '404':
           description: Enrollment not found
 
+  # PIN
+  /api/lock/pin:
+    post:
+      summary: Open lock using pin
+      tags:
+        - Lock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/pin_lock_schema.json'
+      responses:
+        200:
+          description: Success
+        400:
+          description: Bad Request
+        403:
+          description: Invalid PIN
+      x-endpoint-name: pin_open_lock
+
+  /api/lock/pin/create:
+    post:
+      summary: Create a PIN
+      tags:
+        - Lock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/pin_lock_schema.json'
+      responses:
+        200:
+          description: Success
+        400:
+          description: Bad Request
+      x-endpoint-name: pin_create
+
+  /api/lock/pin/delete:
+    delete:
+      summary: Delete a PIN
+      tags:
+        - Lock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/pin_lock_schema.json'
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+        404:
+          description: Not Found
+      x-endpoint-name: pin_delete
+
   # LOCK CONTROL
   /api/lock/control:
     post:
@@ -211,3 +270,6 @@ components:
 
     OpenLockPolicyInput:
       $ref: './schemas/open_lock_policy_schema.json'
+
+    PinInput:
+      $ref: './schemas/pin_lock_schema.json'

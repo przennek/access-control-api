@@ -1,9 +1,11 @@
+from dataclasses import dataclass
 from enum import Enum
 
 
 class Switch(Enum):
     OPEN = "OPEN"
     CLOSE = "CLOSE"
+    PIN_OPEN = "PIN_OPEN"
 
 
 class LockControlInput:
