@@ -31,7 +31,7 @@ var iceCandidates = [];
 RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 RTCSessionDescription = window.RTCSessionDescription;
 RTCIceCandidate = window.RTCIceCandidate;
-navigator.getUserMedia = navigator.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
+navigator.getUserMedia = navigator.mediaDevices.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
 var URL = window.URL || window.webkitURL;
 
 function createPeerConnection() {
@@ -118,30 +118,28 @@ export const start = () => {
         }
 
         ws.onopen = function () {
-//            console.log("onopen()");
-
-            audio_stream = null;
-            var echo_cancellation = true;
-            var localConstraints = {};
-            localConstraints['audio'] = isFirefox ? {echoCancellation: true} : {optional: [{echoCancellation: true}]};
-            localConstraints['video'] = false;
-
-            if (localConstraints.audio || localConstraints.video) {
-                if (navigator.getUserMedia) {
-                    navigator.getUserMedia(localConstraints, function (stream) {
-                        audio_stream = stream;
-                        call(stream);
-                    }, function (error) {
-                        stop();
-                        alert("An error has occurred. Check media device, permissions on media and origin.");
-                        console.error(error);
-                    });
-                } else {
-//                    console.log("getUserMedia not supported");
-                }
-            } else {
-                call();
-            }
+           audio_stream = null;
+           navigator.mediaDevices.getUserMedia({
+              audio: {
+                   autoGainControl: true,
+                   channelCount: 1,
+                   echoCancellation: true,
+                   latency: 0,
+                   noiseSuppression: true,
+                   sampleRate: 48000,
+                   sampleSize: 16,
+                   volume: 1.0
+              }
+            })
+            .then(function (stream) {
+                audio_stream = stream;
+                call(stream);
+            })
+            .catch(function (error) {
+                stop();
+                alert("An error has occurred. Check media device, permissions on media and origin.");
+                console.error(error);
+            });
         };
 
         ws.onmessage = function (evt) {
@@ -150,11 +148,12 @@ export const start = () => {
                 var what = msg.what;
                 var data = msg.data;
             }
-            //console.log("message=" + msg);
+            //console.og("message=" + msg);
 //            console.log("message =" + what);
 
             switch (what) {
                 case "offer":
+                    console.log(data)
                     pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(data)),
                             function onRemoteSdpSuccess() {
                                 remoteDesc = true;

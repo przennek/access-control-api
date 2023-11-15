@@ -3,11 +3,11 @@ import logging
 from flask import Blueprint, request
 from flask import jsonify
 
-from aca.api.db.model.pin import Pin
-from aca.api.model.input.lock_control_input import LockControlInput
-from aca.api.model.lock_control_model import LockControlModel
-from aca.api.model.open_door_policy_model import OpenDoorPolicyModel
-from aca.api.model.pin_model import PinModel
+from aca.api.model.pin import Pin
+from aca.api.service.input.lock_control_input import LockControlInput
+from aca.api.service.lock_control_service import LockControlService, PinOpenResult
+from aca.api.service.open_door_policy_service import OpenDoorPolicyService
+from aca.api.service.pin_service import PinService
 from aca.common.di import iocc
 from aca.common.schema import validate_json_schema, lock_input_json_schema, \
     open_lock_policy_json_schema, pin_json_schema
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def post_lock_control():
     logger.debug("Handling POST /api/lock/control")
     lock_input: LockControlInput = LockControlInput(request.get_json())
-    iocc(LockControlModel).handle_request(lock_input)
+    iocc(LockControlService).handle_request(lock_input)
     return jsonify({'status': 'success'}), 200
 
 
@@ -35,11 +35,16 @@ def post_pin_control():
         "buzzer_duration_seconds": 2
     })
     pin = Pin(request.get_json()["pin"])
-    try:
-        iocc(LockControlModel).handle_request(lock_input, pin)
-    except Exception as e:  # TODO exceptions
+
+    result: PinOpenResult = iocc(LockControlService).handle_request(lock_input, pin)
+    if result == PinOpenResult.INVALID_PIN:
         return jsonify({'status': 'invalid_pin'}), 403
-    return jsonify({'status': 'success'}), 200
+
+    if (result == PinOpenResult.OPENED or result == PinOpenResult.CLOSED
+            or result == PinOpenResult.IDK):
+        return jsonify({'status': 'success'}), 200
+
+    return '', 500
 
 
 @lock_api_bp.route('/pin/create', methods=['POST'], endpoint="pin_create")
@@ -47,7 +52,7 @@ def post_pin_control():
 def post_pin_create():
     logger.debug("Handling POST /api/lock/pin/create")
     pin = Pin(request.get_json()["pin"])
-    iocc(PinModel).create(pin)
+    iocc(PinService).create(pin)
     return jsonify({'status': 'success'}), 200
 
 
@@ -56,7 +61,7 @@ def post_pin_create():
 def post_pin_delete():
     logger.debug("Handling DELETE /api/lock/pin/delete")
     pin = Pin(request.get_json()["pin"])
-    iocc(PinModel).remove(pin)
+    iocc(PinService).remove(pin)
     return jsonify({'status': 'success'}), 204
 
 
@@ -64,7 +69,7 @@ def post_pin_delete():
 @validate_json_schema(open_lock_policy_json_schema)
 def post_open_lock_policy():
     logger.debug("Handling POST /api/lock/policy")
-    saved: bool = iocc(OpenDoorPolicyModel).create_policies(request.get_json())
+    saved: bool = iocc(OpenDoorPolicyService).create_policies(request.get_json())
     if saved:
         return jsonify({'status': 'success'}), 200
     return jsonify({'status': 'error'}), 400
@@ -77,7 +82,7 @@ def delete_policy_by_id():
 
     try:
         if uid:
-            iocc(OpenDoorPolicyModel).delete(uid)
+            iocc(OpenDoorPolicyService).delete(uid)
         return jsonify({'status': 'success'}), 200
     except ValueError as e:
         logger.error(f"Error while trying to delete the policy id: {uid}", e)
@@ -93,7 +98,7 @@ def switch_policy_state_by_id():
     try:
         state = request.args.get('state').lower() == 'true'
         if uid:
-            iocc(OpenDoorPolicyModel).switch_state(uid, state)
+            iocc(OpenDoorPolicyService).switch_state(uid, state)
 
         return jsonify({'status': 'success'}), 200
     except ValueError:
@@ -108,7 +113,7 @@ def switch_policy_state_by_id():
 def get_open_lock_policy():
     logger.debug("Handling GET /api/lock/policy")
     return jsonify({
-        'policies': [policy.as_dict() for policy in iocc(OpenDoorPolicyModel).get_policies()]
+        'policies': [policy.as_dict() for policy in iocc(OpenDoorPolicyService).get_policies()]
     }), 200
 
 
@@ -118,6 +123,6 @@ def get_active_open_lock_policy():
     return jsonify({
         'policies': [
             policy.as_dict() for policy in
-            iocc(OpenDoorPolicyModel).get_currently_active_policies()
+            iocc(OpenDoorPolicyService).get_currently_active_policies()
         ]
     }), 200

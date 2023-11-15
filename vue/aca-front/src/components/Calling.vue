@@ -9,6 +9,7 @@
     import { useRouter } from 'vue-router';
     import { redirectToStandbyOnEndedCall } from '../api/api.js';
     import { start, stop } from '../api/webrtc.js';
+    import { wakeupScreen } from '../api/wakeup.js';
 
     const inputValue = ref('');
     const router = useRouter();
@@ -18,6 +19,7 @@
     const _3min_timeout = 180000
 
     const ring = async () => {
+        wakeupScreen();
         audio.loop = true;
         audio.play();
 
@@ -27,7 +29,7 @@
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ room: room, ongoing_call: false }),
+                body: JSON.stringify({ room: room, call_status: "INACTIVE" }),
             };
 
             const response = await fetch(endpoint, requestOptions);

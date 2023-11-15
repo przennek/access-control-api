@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "pcm-convert": "^1.6.5",
-    "vuetify": "^3.3.17",
-    "yarn": "^1.22.19"
-  }
-}

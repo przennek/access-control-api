@@ -15,7 +15,7 @@ def validate_json_schema(schema):
         def wrapper(*args, **kwargs):
             input_data = request.json
 
-            # Validate the input model against the JSON schema
+            # Validate the input service against the JSON schema
             try:
                 jsonschema.validate(instance=input_data, schema=schema)
             except jsonschema.ValidationError as e:
@@ -29,11 +29,11 @@ def validate_json_schema(schema):
 
 
 # json schemas
-lock_input_json_schema = load_json_schema("./aca/api/model/input/schemas/lock_input_schema.json")
+lock_input_json_schema = load_json_schema("./aca/api/service/input/schemas/lock_input_schema.json")
 open_lock_policy_json_schema \
-    = load_json_schema("./aca/api/model/input/schemas/open_lock_policy_schema.json")
-pin_json_schema = load_json_schema("./aca/api/model/input/schemas/pin_lock_schema.json")
-call_room_json_schema = load_json_schema("./aca/api/model/input/schemas/call_room_schema.json")
-enrollment_json_schema = load_json_schema("./aca/api/model/input/schemas/enrollment_schema.json")
+    = load_json_schema("./aca/api/service/input/schemas/open_lock_policy_schema.json")
+pin_json_schema = load_json_schema("./aca/api/service/input/schemas/pin_lock_schema.json")
+call_room_json_schema = load_json_schema("./aca/api/service/input/schemas/call_room_schema.json")
+enrollment_json_schema = load_json_schema("./aca/api/service/input/schemas/enrollment_schema.json")
 
 # end json schemas

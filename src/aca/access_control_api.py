@@ -1,6 +1,8 @@
+from flask.ctx import AppContext
 from flask_cors import CORS
 from gevent import monkey
 
+from aca.api.controllers.audio_controllers import audio_api_bp
 from aca.api.controllers.call_control_controllers import call_api_bp
 from aca.api.controllers.enrollment_controllers import enrollment_api_bp
 from aca.api.controllers.internal_controllers import api_bp
@@ -18,7 +20,7 @@ from flask_injector import FlaskInjector
 from aca.application_context import context
 
 # logging
-logging.basicConfig(level=os.environ.get("LOG_LEVEL", "DEBUG"))
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
 
 # app
 app = Flask(__name__, static_folder="static", static_url_path="/static")
@@ -29,6 +31,7 @@ app.register_blueprint(call_api_bp)
 app.register_blueprint(lock_api_bp)
 app.register_blueprint(enrollment_api_bp)
 app.register_blueprint(status_api_bp)
+app.register_blueprint(audio_api_bp)
 
 # di
 app.before_first_request_funcs = []

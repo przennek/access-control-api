@@ -6,7 +6,7 @@ export const redirectToCallingOnOngoingCall = async (router) => {
     if (response.status === 200) {
       const data = await response.json();
 
-      if (data && data.ongoing_call && data.room == room) {
+      if (data && data.call_status == "NOT_ANSWERED" && data.room == room) {
         router.push({ name: 'calling' });
       }
     }
@@ -54,6 +54,22 @@ export const redirectToStandbyOnEndedCall = async (router, video) => {
   }
 };
 
+export const markCallAsAnswered = async () => {
+  try {
+    const room = parseInt(localStorage.getItem('room'), 10);
+    const endpoint = 'https://bramka:443/api/call';
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room: room, call_status: "ANSWERED" }),
+    };
+
+    const response = await fetch(endpoint, requestOptions);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
 export const endCall = async () => {
   try {
     const room = parseInt(localStorage.getItem('room'), 10);
@@ -61,7 +77,7 @@ export const endCall = async () => {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room: room, ongoing_call: false }),
+      body: JSON.stringify({ room: room, call_status: "INACTIVE" }),
     };
 
     const response = await fetch(endpoint, requestOptions);

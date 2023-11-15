@@ -32,6 +32,7 @@
     import { ref, onMounted, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
     import { redirectToCallingOnOngoingCall, getServerStatus, getDoorStatus, fetchPoliciesData } from '../api/api.js'
+    import { releaseScreen } from '../api/wakeup.js';
 
     const serverStatus = ref("Loading...");
     const doorStatus = ref("Loading...");
@@ -44,6 +45,7 @@
     const policies = ref([]);
 
     onMounted(async () => {
+      releaseScreen();
       pollTimer = setInterval(async () => redirectToCallingOnOngoingCall(router), pollInterval);
       refreshStatusTimer = setInterval(
           async () => {

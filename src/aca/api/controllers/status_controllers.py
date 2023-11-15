@@ -2,7 +2,7 @@ import logging
 
 from flask import Blueprint, jsonify
 
-from aca.api.model.output.status_output import ServerStatus, StatusOutput
+from aca.api.service.output.status_output import StatusOutput, ServerStatus
 
 status_api_bp = Blueprint('status_api', __name__, url_prefix='/api/status')
 

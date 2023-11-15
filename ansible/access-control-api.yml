@@ -35,7 +35,7 @@
 
     - name: Deploy schemas for swagger
       copy:
-        src: ../src/aca/api/model/input/schemas
+        src: ../src/aca/api/service/input/schemas
         dest: /home/pc/app/
 
     - name: Deploy access-control-api.service

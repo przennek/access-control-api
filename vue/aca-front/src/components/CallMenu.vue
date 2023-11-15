@@ -48,12 +48,13 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { endCall, openLock } from '../api/api.js';
+import { endCall, openLock, markCallAsAnswered } from '../api/api.js';
 const router = useRouter();
 
 const answerButtonDisabled = ref(false);
 
 const answerCall = () => {
+  markCallAsAnswered();
   router.push({ name: 'answer' });
   answerButtonDisabled.value = true; // Disable the "Answer" button
 };

@@ -235,20 +235,21 @@ paths:
                   - ONLINE
                   - OFFLINE
 
-  /api/stream/video_feed:
-    get:
-      summary: Get video feed
+  # SERVER AUDIO
+  /api/audio/play/beep:
+    post:
+      summary: Play beep sound
       tags:
         - Media
       responses:
         '200':
-          description: Video feed retrieved successfully
+          description: Audio feed retrieved successfully
         default:
           description: Error
 
-  /api/stream/audio_feed:
-    get:
-      summary: Get audio feed
+  /api/audio/play/peep:
+    post:
+      summary: Play peep sound
       tags:
         - Media
       responses:

@@ -11,9 +11,14 @@ services:
     environment:
       - FLASK_APP=/src/aca/api/access_control_api.py
       - FLASK_ENV=production
-    privileged: true   # check your privilege
+      - XDG_RUNTIME_DIR=/run/user/1000
+    privileged: true
     devices:
       - "/dev/gpiomem:/dev/gpiomem"
+      - "/dev/snd"
+    volumes:
+      - $HOME/.config/pulse:/usr/src/app/.config/pulse
+      - /run/user/1000/pulse:/run/user/1000/pulse
 
   nginx:
     image: nginx:1.25.1
