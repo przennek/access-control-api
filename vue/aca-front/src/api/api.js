@@ -147,13 +147,31 @@ export const fetchPoliciesData = async () => {
     const response = await fetch('https://bramka:443/api/lock/policy');
     if (response.ok) {
       const data = await response.json();
+
+      let order = {
+        "MONDAY": 1,
+        "TUESDAY": 2,
+        "WEDNESDAY": 3,
+        "THURSDAY": 4,
+        "FRIDAY": 5,
+        "SATURDAY": 6,
+        "SUNDAY": 7
+      }
+
       let policies = data.policies.map((policy) => ({
         id: policy.id,
+        order: order[policy.day],
         day: policy.day,
         start: policy.start_time.slice(0, 8),
         end: policy.end_time.slice(0, 8),
         active: policy.active === 'True' ? 'Active' : 'Inactive',
       }));
+
+      policies.sort((a, b) => {
+        if(a.order < b.order) return -1;
+        if(a.order > b.order) return 1;
+        return 0;
+      })
 
       return policies;
     } else {
