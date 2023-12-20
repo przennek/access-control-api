@@ -6,6 +6,11 @@
       "type": "string",
       "enum": ["OPEN", "CLOSE"]
     },
+    "open_duration_seconds": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 360
+    },
     "buzzer_duration_seconds": {
       "type": ["integer", "null"],
       "minimum": 0,

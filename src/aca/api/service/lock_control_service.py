@@ -40,7 +40,7 @@ class LockControlService:
 
     def handle_request(self, lci: LockControlInput, pin: Optional[Pin] = None) -> PinOpenResult:
         return {
-            Switch.OPEN: lambda: self.open_lock(),
+            Switch.OPEN: lambda: self.open_lock(lci.open_duration_seconds),
             Switch.CLOSE: lambda: self.ld.close_lock(),
             Switch.PIN_OPEN: lambda: self.pin_open(pin),
         }.get(lci.operation)()
@@ -49,13 +49,13 @@ class LockControlService:
         self.ld.close_lock()
         return PinOpenResult.CLOSED
 
-    def pin_open(self, pin: Pin) -> PinOpenResult:
+    def pin_open(self, pin: Pin, ttl_seconds: int = 20) -> PinOpenResult:
         context = current_app.app_context
 
         def _spawn_task():
             with context():
                 if self.pin_dto.exists(pin):
-                    self.open_lock()
+                    self.open_lock(ttl_seconds)
                     self.audio_service.play(self.door_opened, blocking=False)
                 else:
                     self.audio_service.play(self.bad_pin, blocking=False)
@@ -63,8 +63,9 @@ class LockControlService:
         threading.Thread(target=_spawn_task).start()
         return PinOpenResult.IDK
 
-    def open_lock(self) -> PinOpenResult:
-        ttl_seconds = 20
+    def open_lock(self, ttl_seconds: Optional[int] = 20) -> PinOpenResult:
+        if ttl_seconds is None:
+            ttl_seconds = 20
         policy = OpenDoorPolicy.get_policy_from_now(timedelta_end=timedelta(seconds=ttl_seconds))
         self.open_dto.create(policy, ttl_seconds)
         self.ld.open_lock()

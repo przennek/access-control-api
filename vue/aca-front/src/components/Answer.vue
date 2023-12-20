@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <img ref="video" class="video" src="../assets/standby.png">
-    <audio id="remote-audio" autoplay=""></audio>
   </div>
 </template>
 
@@ -9,7 +8,6 @@
     import { ref, onMounted, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
     import { redirectToStandbyOnEndedCall } from '../api/api.js';
-    import { start, stop } from '../api/webrtc.js';
 
     const video = ref(null);
 
@@ -20,14 +18,12 @@
 
     onMounted(() => {
       pollTimer = setInterval(async () => redirectToStandbyOnEndedCall(router, video), pollInterval);
-      start();
       video.value.setAttribute("src", "https://bramka:8080/stream/video.mjpeg")
     });
 
     onBeforeUnmount(() => {
       clearInterval(pollTimer);
       video.value.setAttribute("src", "../assets/standby.png")
-      stop();
     });
 
 

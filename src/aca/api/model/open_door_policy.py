@@ -67,7 +67,7 @@ class OpenDoorPolicy:
 def create_open_door_policies(data) -> List[OpenDoorPolicy]:
     return [
         OpenDoorPolicy(
-            odp["id"] if odp["id"] is not None else uuid.uuid4(),
+            odp["id"] if odp.get("id") is not None else uuid.uuid4(),
             odp["day"],
             time.fromisoformat(odp["start_time"]),
             time.fromisoformat(odp["end_time"]),

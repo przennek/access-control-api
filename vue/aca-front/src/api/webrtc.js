@@ -1,12 +1,8 @@
 // this code is a variation of a code found at https://www.linux-projects.org/
 
-var signalling_server_hostname = location.hostname || "192.168.2.156";
-var signalling_server_address = signalling_server_hostname + ':' + (location.port || (location.protocol === 'https:' ? 443 : 80));
-var isFirefox = typeof InstallTrigger !== 'undefined';// Firefox 1.0+
-
 var ws = null;
 var pc;
-var audio_stream;
+var audio_stream = null;
 
 var pcConfig = {
     "iceServers": [],
@@ -23,8 +19,6 @@ var mediaConstraints = {
         OfferToReceiveVideo: false
     }
 };
-var keys = [];
-var trickle_ice = true;
 var remoteDesc = false;
 var iceCandidates = [];
 
@@ -32,17 +26,16 @@ RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 RTCSessionDescription = window.RTCSessionDescription;
 RTCIceCandidate = window.RTCIceCandidate;
 navigator.getUserMedia = navigator.mediaDevices.getUserMedia || navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia;
-var URL = window.URL || window.webkitURL;
 
-function createPeerConnection() {
+export const createPeerConnection = () => {
     try {
         var pcConfig_ = pcConfig;
-//        console.log(JSON.stringify(pcConfig_));
+        console.log(JSON.stringify(pcConfig_));
         pc = new RTCPeerConnection(pcConfig_, pcOptions);
         pc.onicecandidate = onIceCandidate;
         pc.ontrack = onTrack;
         pc.onremovestream = onRemoteStreamRemoved;
-//        console.log("peer connection successfully created!");
+        console.log("peer connection successfully created!");
     } catch (e) {
         console.error("createPeerConnection() failed");
     }
@@ -61,7 +54,7 @@ function onIceCandidate(event) {
         };
         ws.send(JSON.stringify(request));
     } else {
-//        console.log("End of candidates.");
+        console.log("End of candidates.");
     }
 }
 
@@ -69,7 +62,7 @@ function addIceCandidates() {
     iceCandidates.forEach(function (candidate) {
         pc.addIceCandidate(candidate,
             function () {
-//                console.log("IceCandidate added: " + JSON.stringify(candidate));
+                console.log("IceCandidate added: " + JSON.stringify(candidate));
             },
             function (error) {
                 console.error("addIceCandidate error: " + error);
@@ -80,20 +73,24 @@ function addIceCandidates() {
 }
 
 function onTrack(event) {
-//    console.log("Remote track!");
-    var remoteVideoElement = document.getElementById('remote-audio');
-    remoteVideoElement.srcObject = event.streams[0];
+    console.log("Remote track!");
+    let remoteAudioElement = document.getElementById('remote-audio');
+    let stream = event.streams[0];
+    remoteAudioElement.srcObject = stream;
 }
 
 function onRemoteStreamRemoved(event) {
-    var remoteVideoElement = document.getElementById('remote-audio');
-    remoteVideoElement.srcObject = null;
+    let remoteAudioElement = document.getElementById('remote-audio');
+    remoteAudioElement.srcObject = null;
+}
+
+export const getAudioStream = () => {
+    return audio_stream;
 }
 
 export const start = () => {
     if ("WebSocket" in window) {
         document.documentElement.style.cursor = 'wait';
-        var server = "192.168.2.156:8080";
 
         var protocol = location.protocol === "https:" ? "wss:" : "ws:";
         ws = new WebSocket(protocol + '//' + 'bramka:8080' + '/stream/webrtc');
@@ -114,7 +111,7 @@ export const start = () => {
                 }
             };
             ws.send(JSON.stringify(request));
-//            console.log("call(), request=" + JSON.stringify(request));
+            console.log("call(), request=" + JSON.stringify(request));
         }
 
         ws.onopen = function () {
@@ -127,13 +124,15 @@ export const start = () => {
                    latency: 0,
                    noiseSuppression: true,
                    sampleRate: 48000,
-                   sampleSize: 16,
-                   volume: 1.0
+                   sampleSize: 16
               }
             })
             .then(function (stream) {
                 audio_stream = stream;
                 call(stream);
+                audio_stream.getAudioTracks().forEach(track => {
+                  track.enabled = false;
+                });
             })
             .catch(function (error) {
                 stop();
@@ -148,8 +147,8 @@ export const start = () => {
                 var what = msg.what;
                 var data = msg.data;
             }
-            //console.og("message=" + msg);
-//            console.log("message =" + what);
+            console.log("message=" + msg);
+            console.log("message =" + what);
 
             switch (what) {
                 case "offer":
@@ -158,7 +157,7 @@ export const start = () => {
                             function onRemoteSdpSuccess() {
                                 remoteDesc = true;
                                 addIceCandidates();
-//                                console.log('onRemoteSdpSucces()');
+                                console.log('onRemoteSdpSucces()');
                                 pc.createAnswer(function (sessionDescription) {
                                     pc.setLocalDescription(sessionDescription);
                                     var request = {
@@ -166,7 +165,7 @@ export const start = () => {
                                         data: JSON.stringify(sessionDescription)
                                     };
                                     ws.send(JSON.stringify(request));
-//                                    console.log(request);
+                                    console.log(request);
 
                                 }, function (error) {
                                     alert("Failed to createAnswer: " + error);
@@ -188,7 +187,7 @@ export const start = () => {
 
                 case "iceCandidate": // when trickle is enabled
                     if (!msg.data) {
-//                        console.log("Ice Gathering Complete");
+                        console.log("Ice Gathering Complete");
                         break;
                     }
                     var elt = JSON.parse(msg.data);
@@ -229,6 +228,7 @@ export const start = () => {
     } else {
         alert("Sorry, this browser does not support WebSockets.");
     }
+
 }
 
 export const stop = () => {

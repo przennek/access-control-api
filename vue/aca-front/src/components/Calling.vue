@@ -8,13 +8,13 @@
     import { ref, onMounted, onBeforeUnmount } from 'vue';
     import { useRouter } from 'vue-router';
     import { redirectToStandbyOnEndedCall } from '../api/api.js';
-    import { start, stop } from '../api/webrtc.js';
     import { wakeupScreen } from '../api/wakeup.js';
 
     const inputValue = ref('');
     const router = useRouter();
     const soundURL = new URL('/static/assets/ring.mp3', import.meta.url);
     let audio;
+    let timeoutId;
     const video = ref(null);
     const _3min_timeout = 180000
 
@@ -23,7 +23,7 @@
         audio.loop = true;
         audio.play();
 
-        setTimeout(async () => {
+        timeoutId = setTimeout(async () => {
             const room = parseInt(localStorage.getItem('room'), 10);
             const endpoint = 'https://bramka:443/api/call';
             const requestOptions = {
@@ -52,6 +52,7 @@
 
     onBeforeUnmount(() => {
       clearInterval(pollTimer);
+      clearTimeout(timeoutId);
       video.value.setAttribute("src", "../assets/standby.png")
       audio.pause()
     });
